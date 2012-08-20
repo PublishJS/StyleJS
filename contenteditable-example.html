@@ -1,0 +1,80 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml"> 
+       <head>
+              <title>Aloha Editor Example</title>
+               
+             <script type="text/javascript" src="http://cdn.aloha-editor.org/latest/lib/vendor/jquery-1.7.2.js"></script> 
+              <script type="text/javascript" src="http://cdn.aloha-editor.org/latest/lib/require.js"></script>
+
+              <!-- load the Aloha Editor core and some plugins -->
+              <script src="aloha/src/lib/aloha.js"
+                                   data-aloha-plugins="common/ui,
+                                                        common/format,
+                                                        common/list,
+                                                        common/link,
+                                                        common/highlighteditables,
+                                                        extra/hints">
+              </script> 
+               
+              <!-- load the Aloha Editor CSS styles -->
+              <link href="aloha/src/css/aloha.css" rel="stylesheet" type="text/css" />
+              <link href="embeded/design.css" rel="stylesheet" type="text/css" /> 
+ 
+              <!-- make all elements with class="editable" editable with Aloha Editor -->
+              <script type="text/javascript">
+                     Aloha.ready( function() {
+                            var $ = Aloha.jQuery;
+                            $('.editable').aloha();
+                     });
+              </script> 
+			
+  <script type="text/javascript" src="contenteditable.js"></script>
+
+
+  </script>
+
+<style type="text/css">
+
+ #area { background-color: yellow;}
+ .ui-menu {
+    height: 50px;
+ }
+ .ui-menu-item {
+  list-style-type: none;
+  background-color: green;
+ }
+ #enter_field {
+    background-color: gray;
+ }
+</style>
+
+
+       </head>
+       <body>
+              </pre> -->
+              <h1 class="editable" title="h1">Aloha Editor Example</h1>
+ 
+              <p class="editable">Click to edit this paragraph.</p>
+ 
+              <div class="editable">
+                     <p>This is an editable div container.</p>
+                     <p>Follow us on <a href="http://twitter.com/alohaeditor">Twitter</a>.</p>
+                     <ul>
+                            <li>list item one</li>
+                            <li>list item two</li>
+                     </ul>
+              </div>
+              
+              <div id="report"></div>
+
+              <p>Use Aloha Editor your existing textarea elements:</p>
+              <textarea id="sta1"></textarea>   
+              <a href="#" onclick="clicked('#sta1')">click</a>
+              <textarea id="area"></textarea>
+              position: <span id="position_value"></span>
+              recommended value: <span id="recomended_value"></span><br/>
+              Here you can enter the text (contenteditable) - just click on the gray area:
+              <div contenteditable="true" id="enter_field"></div>
+              Check the contenteditable.js for the stuff I did so far
+       </body>
+</html>
