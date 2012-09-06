@@ -1,81 +1,58 @@
-    var ctrl_pressed=false; 
-    var alt_pressed = false;
-    var cmd_pressed = false;
 
-    function removeElement(instring,in_pos){ 
-      var size = instring.length;
-      return instring.substr(0,in_pos)+instring.substr(in_pos+1,size);
-    };
+function list_of_recomendations(instring,left_menu_pos,top_menu_pos,left_string,right_string){
+    var out_value = "";
+    $("#selection_menu").dialog({modal: true,
+                                position: [left_menu_pos+10,top_menu_pos+30]});   
+    var list_of_recs = recomendation_list(instring);
+    console.log(list_of_recs);
+    var html_string = "<ul id='lister'>";
+    for (i=0;i<list_of_recs.length;i++){
+       html_string += "<li id='"+list_of_recs[i]+"'>"+list_of_recs[i]+"</li>";
+    }
+    html_string += "</ul>";
+    $("#list_menu").html(html_string);
+    $("#lister li").click(function(e){
+      out_value = this.id;
+      console.log(out_value);
+      $("#selection_menu").dialog("close");
+       var out_string = left_string+out_value+right_string;
+       $("#enter_field").html(out_string);      
+      return out_value;      
+    });
+}
 
-    function enterElement(instring,in_pos,inchar){ // should work as insert even when clicking on random word but doesn't always :(
-      var size = instring.length;
-      return instring.substr(0,in_pos-1)+inchar+instring.substr(in_pos-1,size);
-    };
 
-    function splitElements(instring){ //split on the space or newline character
-      var elements = instring.split(/\r\n|\r|\n|\ /);
-      return elements; 
 
-    };
+  function get_recomendation(in_pos,left_menu_pos,top_menu_pos){
+     var instring = $("#enter_field").text();
+     var instring_size = instring.length;
+     if ((instring_size==in_pos)||(instring.substr(in_pos,1)==" ")) { // is it end of the string??
+       var rec_string = instring.substr(0,in_pos);
+       var reversed_string = rec_string.split("").reverse().join("");
+       var end_rev_pos = reversed_string.indexOf(" ");
+       if (end_rev_pos==-1) {
+         end_rev_pos=instring_size;
+       }
+       console.log("space pos ",end_rev_pos);
+       var text_size = instring.length;
+       var tab_string = reversed_string.substr(0,end_rev_pos).split("").reverse().join(""); // string by cursor
+       console.log("tab",tab_string);
+       console.log("rec ",instring.substr(0,in_pos));
+       // get recomendation on out_string and show it in menu
+       var left_string = instring.substr(0,in_pos-tab_string.length);
+       var right_string = instring.substr(in_pos,text_size-in_pos);
+       var recomended_string = list_of_recomendations(tab_string,left_menu_pos,top_menu_pos,left_string,right_string);
+     }
+  }
 
     $(document).ready(function(){
-      var written_value="";
-      var char_position=0;
-      $("#enter_field").click(function(e){
-        if (written_value==""){
-          char_position=0;
-        } else {
-          var selection = window.getSelection();          
-          char_position = selection.focusOffset; // getting character position when doing a mouseclick
-        }
-      });
-
       $("#enter_field").keydown(function(e){ // getting keydown to see if special keys are selected 
         var code = (e.keyCode ? e.keyCode : e.which);
-        switch(code){
-          case 17: //ctrl
-            ctrl_pressed=true;
-            break;
-          case 18: //alt
-            alt_pressed=true;
-            break;
-          case 91: // cmd
-            cmd_pressed=true;
+        if (code==9){
+          var selection = window.getSelection(); 
+          var end_pos = selection.focusOffset; 
+          console.log(e.target.offsetLeft);
+          get_recomendation(end_pos,e.target.offsetLeft,e.target.offsetTop);     // new written value          
         }
-        // check control keys
-      });
-
-      $("#enter_field").keyup(function(e){        
-        $("#position_value").html(char_position);        
-        var code = (e.keyCode ? e.keyCode : e.which);
-        switch(code){
-          case 9: // tab
-            break;
-          // moving with arrow keys
-          case 37: // left
-            char_position-=1; 
-            break;
-          case 38: // up
-            char_position=0;
-            break;
-          case 39: // right
-            char_position+=1;
-            break;
-          case 40: //down
-            char_position=written_value.length; // doesn't move the cursor to the start
-            //$("#enter_field").focus();
-            //$("#enter_field")[0].setSelectionRange(0,0);
-            // move cursor to start!!!!
-            break;
-          case 8: //backspace -- you know ... deleting
-            char_position-=1;
-            written_value = removeElement(written_value,char_position);           
-            break;
-          default: // just regular text - need to correct some characters though 
-            char_position+=1;
-            written_value=enterElement(written_value,char_position,String.fromCharCode(code)); 
-        }
-        var list_of_values = splitElements(written_value); // splitting entered values 
-        $("#recomended_value").text(list_of_values); // shows typedin words separated with commas
-        })
-    }); 
+      }); 
+    });  

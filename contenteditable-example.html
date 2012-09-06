@@ -3,8 +3,12 @@
        <head>
               <title>Aloha Editor Example</title>
                
-             <script type="text/javascript" src="http://cdn.aloha-editor.org/latest/lib/vendor/jquery-1.7.2.js"></script> 
+             <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script> 
+              <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js"></script>             
               <script type="text/javascript" src="http://cdn.aloha-editor.org/latest/lib/require.js"></script>
+              <script type="text/javascript" src="list_of_strings.js"></script>              
+              <script type="text/javascript" src="contenteditable.js"></script>              
+
 
               <!-- load the Aloha Editor core and some plugins -->
               <script src="aloha/src/lib/aloha.js"
@@ -19,6 +23,7 @@
               <!-- load the Aloha Editor CSS styles -->
               <link href="aloha/src/css/aloha.css" rel="stylesheet" type="text/css" />
               <link href="embeded/design.css" rel="stylesheet" type="text/css" /> 
+              <link href="contenteditable.css" rel="stylesheet" type="text/css" />               
  
               <!-- make all elements with class="editable" editable with Aloha Editor -->
               <script type="text/javascript">
@@ -28,9 +33,6 @@
                      });
               </script> 
 			
-  <script type="text/javascript" src="contenteditable.js"></script>
-
-
   </script>
 
 <style type="text/css">
@@ -66,6 +68,7 @@
               </div>
               
               <div id="report"></div>
+              <div id="selection_menu"><span id="list_menu"></span></div>
 
               <p>Use Aloha Editor your existing textarea elements:</p>
               <textarea id="sta1"></textarea>   
