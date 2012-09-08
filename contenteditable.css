@@ -3,11 +3,8 @@
     border: 5px solid red;
 }
 
-#list_menu {
-    background-color: green;
-}
 
 #lister {
-    background-color: yellow;
     cursor: pointer;
+    list-style: none;    
 }
