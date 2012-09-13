@@ -1,0 +1,82 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml"> 
+       <head>
+              <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
+              <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js"></script>
+
+<style type="text/css">
+#enter_field {
+  background-color: gray;
+}
+</style>
+       </head>
+<body>
+  <div id="prenos"></div>
+  <div contenteditable="true" id="enter_field"></div>
+    Check the contenteditable.js for the stuff I did so far
+  <div id="position">
+    line: 0 pos:  0
+  </div>
+</body>
+  <script type="text/javascript">
+    var line_size = 0;  
+
+function getSelectionCoords() {
+    var sel = document.selection, range;
+    var x = 0, y = 0;
+    if (sel) {
+        if (sel.type != "Control") {
+            range = sel.createRange();
+            range.collapse(true);
+            x = range.boundingLeft;
+            y = range.boundingTop;
+        }
+    } else if (window.getSelection) {
+        sel = window.getSelection();
+        if (sel.rangeCount) {
+            range = sel.getRangeAt(0).cloneRange();
+            if (range.getClientRects) {
+                range.collapse(true);
+                var rect = range.getClientRects()[0];
+                x = rect.left;
+                y = rect.top;
+            }
+        }
+    }
+    return { x: x, y: y };
+}    
+    function getCurrentLine(){
+      var all_the_lines = $("#enter_field").html().replace(/<\/div>/g,"").replace(/&nbsp;/g,"").split("<div>");
+      var selection = window.getSelection();
+      console.log(all_the_lines);
+      var current_line = 1;
+      for (i=0;i<all_the_lines.length;i++){
+        current_line+=1;
+        if($.trim(selection.focusNode.nodeValue)==$.trim(all_the_lines[i])){
+          i=all_the_lines.length;
+        }
+      }
+      return current_line-1;
+    }  
+    $("#enter_field").keydown(function(e) {
+        var y_pos = getSelectionCoords().y;
+        if(line_size==0){
+          line_size=y_pos;
+        }
+        var current_line = (y_pos+10)/(10+line_size));
+        if (y_pos==line_size) {
+          current_line=1;
+        }
+      var selection = window.getSelection(); 
+      $("#position").html("line:  "+current_line+" pos:  "+selection.anchorOffset);
+
+      var code = (e.keyCode ? e.keyCode : e.which);      
+      if (code==9){
+        console.log(line_size);
+        //console.log(e.target.clientHeight/e.view.line_size);
+        console.log("current_line",current_line);
+      }
+    });
+  </script> 
+
+</html>

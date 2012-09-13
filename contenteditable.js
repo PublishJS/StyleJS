@@ -1,15 +1,42 @@
-function getCurrentLine(){
-  var all_the_lines = $("#enter_field").html().replace(/<\/div>/g,"").replace(/&nbsp;/g,"").split("<div>");
-  var selection = window.getSelection();
-  console.log(all_the_lines);
-  var current_line = 1;
-  for (i=0;i<all_the_lines.length;i++){
-    current_line+=1;
-    if($.trim(selection.focusNode.nodeValue)==$.trim(all_the_lines[i])){
-      i=all_the_lines.length;
+var first_line_pos = -1;
+var second_line_pos = -1;
+
+function getSelectionCoords() {
+    var sel = document.selection, range;
+    var x = 0, y = 0;
+    if (sel) {
+        if (sel.type != "Control") {
+            range = sel.createRange();
+            range.collapse(true);
+            x = range.boundingLeft;
+            y = range.boundingTop;
+        }
+    } else if (window.getSelection) {
+        sel = window.getSelection();
+        if (sel.rangeCount) {
+            range = sel.getRangeAt(0).cloneRange();
+            if (range.getClientRects) {
+                range.collapse(true);
+                var rect = range.getClientRects()[0];
+                x = rect.left;
+                y = rect.top;
+            }
+        }
     }
+    return { x: x, y: y };
+} 
+
+function getCurrentLine(){
+  var y_pos = getSelectionCoords().y; 
+  console.log("ypos",y_pos); 
+  var line_space = second_line_pos - first_line_pos;
+  console.log("space",line_space);
+  var current_line = (y_pos - first_line_pos)/(second_line_pos - first_line_pos)+1;
+  if (y_pos==first_line_pos) {
+    current_line=1;
   }
-  return current_line-1;
+  console.log("current_line",current_line);
+  return current_line;
 }
 
 
@@ -22,7 +49,9 @@ function leftRightAndRecomString(line_pos){
   var text_in_divs = instring.replace(/<\/div>/g,"").split(/<div>/g);
   var no_of_lines = text_in_divs.length;
   if (current_line>1) {
+    console.log(current_line);
     instring = text_in_divs[current_line-1];
+    console.log(text_in_divs);
     recom_string_spaces_cnt = instring.split(/ /g).length-1;
     console.log(">>",instring.split(/ /g).length-1);
   }
@@ -102,16 +131,20 @@ function listOfRecomendations(instring,left_menu_pos,top_menu_pos,left_string,ri
     $(document).ready(function(){
       var instring;
       var selection;
-      var Ypos;
-      var line_flag = -1;
+
       $("#enter_field").keydown(function(e){ // getting keydown to see if special keys are selected 
         var code = (e.keyCode ? e.keyCode : e.which);
-        if (code && line_flag==-1){
-          line_flag = window.event.srcElement.offsetHeight;
+        if (code && first_line_pos!=-1 && second_line_pos==-1){
+          var current_pos = getSelectionCoords().y;
+          if (current_pos>first_line_pos){
+            second_line_pos = current_pos;
+          }
+        }
+        if (code && first_line_pos==-1){
+          first_line_pos = getSelectionCoords().y;
         }
 
         if (code==9){
-          console.log("event",window.event);
           instring = $("#enter_field").html();
           var selection = window.getSelection(); 
           var all_strings = leftRightAndRecomString(selection.anchorOffset);
