@@ -1,6 +1,69 @@
 $(document).ready(function() {
 
     var styleJS = function(){
+
+        var dragDrop = {
+            initialMouseX: undefined,
+            initialMouseY: undefined,
+            startX: undefined,
+            startY: undefined,
+            dXKeys: undefined,
+            dYKeys: undefined,
+            draggedObject: undefined,
+            addEventSimple: function (obj,evt,fn) {
+                if (obj.addEventListener)
+                    obj.addEventListener(evt,fn,false);
+                else if (obj.attachEvent)
+                    obj.attachEvent('on'+evt,fn);
+            },
+            removeEventSimple: function (obj,evt,fn) {
+                if (obj.removeEventListener)
+                    obj.removeEventListener(evt,fn,false);
+                else if (obj.detachEvent)
+                    obj.detachEvent('on'+evt,fn);
+            },
+            initElement: function (element) {
+                if (typeof element == 'string')
+                    element = document.getElementById(element);
+                //element.onmousedown = dragDrop.startDragMouse;
+                dragDrop.addEventSimple(element,'mousedown',dragDrop.startDragMouse);
+            },
+            startDragMouse: function (e) {
+                dragDrop.startDrag(this);
+                var evt = e || window.event;
+                dragDrop.initialMouseX = evt.clientX;
+                dragDrop.initialMouseY = evt.clientY;
+                dragDrop.addEventSimple(document,'mousemove',dragDrop.dragMouse);
+                dragDrop.addEventSimple(document,'mouseup',dragDrop.releaseElement);
+                return false;
+            },
+            startDrag: function (obj) {
+                if (dragDrop.draggedObject)
+                    dragDrop.releaseElement();
+                dragDrop.startX = obj.offsetLeft;
+                dragDrop.startY = obj.offsetTop;
+                dragDrop.draggedObject = obj;
+                obj.className += ' dragged';
+            },
+            dragMouse: function (e) {
+                var evt = e || window.event;
+                var dX = evt.clientX - dragDrop.initialMouseX;
+                var dY = evt.clientY - dragDrop.initialMouseY;
+                dragDrop.setPosition(dX,dY);
+                return false;
+            },
+            setPosition: function (dx,dy) {
+                dragDrop.draggedObject.style.left = dragDrop.startX + dx + 'px';
+                dragDrop.draggedObject.style.top = dragDrop.startY + dy + 'px';
+            },
+            releaseElement: function() {
+                dragDrop.removeEventSimple(document,'mousemove',dragDrop.dragMouse);
+                dragDrop.removeEventSimple(document,'mouseup',dragDrop.releaseElement);
+                dragDrop.draggedObject.className = dragDrop.draggedObject.className.replace(/dragged/,'');
+                dragDrop.draggedObject = null;
+            }
+        };
+
         // Internal Hidden Variables
         var selected_item;  // Selected Item By Clicking an element
         var that = this;    // Helper variable for use in internal functions
@@ -28,6 +91,9 @@ $(document).ready(function() {
        var hardcoded_border_styles = ["none", "hidden", "dotted", "dashed", "solid", "double", "groove", "ridge", "inset", "outset"];
 
        var hiding_wrapper = function(action_trig, action_recieve) {
+            //console.log("Activate click on: ", action_trig);
+            //console.log("Activate click hidding: ", action_recieve);
+            //console.log($(action_trig), $(action_recieve));
             $(action_trig).click(function(e) {
                     var temp_lookup = $(action_recieve);
                     if(temp_lookup.is(":hidden")) {
@@ -37,6 +103,19 @@ $(document).ready(function() {
                     }
             });
         };
+
+       var toggle_visibility = function(element) {
+            //console.log("Activate click on: ", action_trig);
+            //console.log("Activate click hidding: ", action_recieve);
+            //console.log($(action_trig), $(action_recieve));
+            var temp_lookup = $(element);
+            if(temp_lookup.is(":hidden")) {
+                temp_lookup.slideDown("slow"); 
+            } else {
+                temp_lookup.hide();
+            }
+        };
+
 
         var from_array_to_select = function(select_identifier, input_array) {
             // var select = document.getElementById(select_identifier);
@@ -55,90 +134,182 @@ $(document).ready(function() {
         // console.log(css_style_attributes);
 
         // Create a CSS style for the Floating Menu.
-        $("body").before("<style> .styleJS_buttons { color: white; padding: 5px; border: 1px solid white; }\
-                                .styleJS_buttons:hover { cursor: pointer; }\
-                        #styleJS_tooltip { border:1px solid #333; background:#f7f5d1; padding:2px 5px; color:#333; }</style>");
+        var css_part = "<style>";
+            css_part +="    .styleJS_buttons { ";
+            css_part +="        color: white; padding: 5px;";
+            css_part +="        border: 1px solid white;";
+            css_part +="    }";
+            css_part +="    #clickme { ";
+            css_part +="        position:relative;";
+            css_part +="        left:10px;";
+            css_part +="        top:10px;";
+            css_part +="    }";
+            css_part +="    .styleJS_buttons:hover { ";
+            css_part +="        cursor: pointer;";
+            css_part +="    }";
+            css_part +="    #styleJS_tooltip { ";
+            css_part +="        border:1px solid #333; background:#f7f5d1;";
+            css_part +="        padding:2px 5px; color:#333;";
+            css_part +="    }";
+            css_part +="    #styleJS_tooltip1 { ";
+            css_part +="        position: fixed;";
+            css_part +="        border:1px solid #333; background:#f7f5d1;";
+            css_part +="        left:0;";
+            css_part +="        top:100px;";
+            css_part +="    }";
+            css_part +="    #slider { ";
+            css_part +="        position:relative;";
+            css_part +="        left: 20px;";
+            css_part +="        top :50px;";
+            css_part +="    }";
+            css_part +="    .styleJS_buttons1 { ";
+            css_part +="        display:block ";
+            css_part +="        color: black; padding: 5px;";
+            css_part +="        background-color: white;";
+            css_part +="        border: 1px solid white;";
+            css_part +="    }";
+            css_part +="    .styleJS_buttons1:hover { ";
+            css_part +="        cursor: pointer;";
+            css_part +="    }";
+            css_part +="    .styleJS_buttons1.toggled { ";
+            css_part +="        color: white; padding: 5px;";
+            css_part +="        background-color: black;";
+            css_part +="        border: 1px solid white;";
+            css_part +="    }";
+            css_part +="    .styleJS_hidden { ";
+            css_part +="        display:none;";
+            css_part +="    }";
+            css_part +="    #styleJS_master_menu { ";
+            css_part +="        position: fixed;";
+            css_part +="        width:200px;";
+            css_part +="        height:200px;";
+            css_part +="        border:3px solid black;";
+            css_part +="        cursor:move;";
+            css_part +="        left:0;";
+            css_part +="        top:150px;";
+            css_part +="    }";
+            css_part +="</style>";
+
+        $("head").append(css_part);
 
         // Create the floating Menu.
-        $("body").append('<div id="clickme" class="styleJS_buttons" style="position:fixed;left: 20px;top:70px;">CSS editing</div>\
-                            <fieldset id="slider" style="position: fixed; left: 20px; top: 100px; display: none; ">\
-                            <div id="showIDClass" class="styleJS_buttons">Show ID Class</div>\
-                            <div id="changeBackgroundColor" class="styleJS_buttons">Choose Background Colour</div>\
-                            <div id="changeCornerRadius" class="styleJS_buttons">Change Corner Radius</div>\
-                            <div id="displayStyle" class="styleJS_buttons">Display Style</div>\
-                            <div id="fontPicker" class="styleJS_buttons">Choose Font</div>\
-                            </fieldset>');
+        var html_part = '<div id="styleJS_master_menu"> ';
+            html_part +='   <button id="styleJS_zero" class="styleJS_buttons1" title="Functions">0</button>';
+            html_part +='   <div id="styleJS_submenu_1" style="display: none">';
+            html_part +='      <button id="styleJS_colorSelection" class="styleJS_buttons1" title="Change Background Color">1</button>';
+            html_part +='      <button id="styleJS_cornerRadius" class="styleJS_buttons1" title="Change Corners">2</button>';
+            html_part +='      <button id="styleJS_displayStyle" class="styleJS_buttons1" title="Display Style">3</button>';
+            html_part +='      <button id="styleJS_fontPicker" class="styleJS_buttons1" title="Que Passa">4</button>';
+            html_part +='      <button id="styleJS_second" class="styleJS_buttons1" title="Que Passa">5</button>';
+            html_part +='      <button id="styleJS_third" class="styleJS_buttons1" title="Que Passa">6</button>';
+            html_part +='   </div>';
+            html_part +='   <div id="styleJS_submenu_2" style="display: none">';
+
+            html_part +='      <fieldset id="styleJS_colorSelection_fs" style="display=none;">';
+            html_part +='          <input id="styleJS_colorSelection_fs_input" placeholder="eg. blue or rgba(0,0,255,0.5) or #0000FF"></input>';
+            html_part +='          <button id="styleJS_colorSelection_fs_button"> OK </button>';
+            html_part +='      </fieldset>';
+
+
+            html_part +='      <fieldset id="styleJS_cornerRadius_fs" style="display=none;">';
+            html_part +='          <select id="styleJS_cornerRadius_fs_select">';
+            html_part +='          <option>Choose Corner Style</option></select>';
+            html_part +='          <input id="styleJS_cornerRadius_fs_input_border" placeholder="Border Width"></input>';
+            html_part +='          <input id="styleJS_cornerRadius_fs_input_radius" placeholder="Radius eg. 10 or 10%"></input>';
+            html_part +='          <button id="styleJS_cornerRadius_fs_button"> OK </button>';
+            html_part +='      </fieldset>';
+
+
+            html_part +='      <fieldset id="styleJS_displayStyle_fs" style="display=none;">';
+            html_part +='          <textarea id="styleJS_displayStyle_fs_textarea" wrap="wrap" placeholder="Press Refresh Button to get CSS of element."></textarea>';
+            html_part +='          <button id="styleJS_displayStyle_fs_button"> Refresh </button>';
+            html_part +='      </fieldset>';
+
+
+            html_part +='      <fieldset id="styleJS_fontPicker_fs" style="display=none;">';
+            html_part +='          <select id="styleJS_fontPicker_fs_select">';
+            html_part +='          <option>Choose Font</option></select>';
+            html_part +='          <input id="styleJS_fontPicker_fs_input" placeholder="Font Size"></input>';
+            html_part +='          <button id="styleJS_fontPicker_fs_button"> OK </button>';
+            html_part +='      </fieldset>';
+            
+            html_part +='   </div>';
+           // TODO: file saving stuff !!!
+           // html_part +=                '       <input type="file">';
+           // html_part +=                '       </input>';
+            html_part +='</div>';
+            // END of Master Menu
+            html_part +='<div id="styleJS_tooltip1">';
+            html_part +='</div>';
+
+
+        // Append the Menu to the Body
+        $("body").append(html_part);
+
+        // Fill-up after addition to HTML the Select Options for different border styles
+        from_array_to_select("#styleJS_cornerRadius_fs_select", hardcoded_border_styles);
+
+        // Fill-up after addition to HTML the Select Options for hardcoded fonts
+        from_array_to_select("#styleJS_fontPicker_fs_select", hardcoded_font_families);
+
         $("fieldset#slider").hide();
+        //hiding_wrapper("div#clickme","fieldset#slider");
+        
+        // TODO: test with jQuery-ui
+        //
+        $("#styleJS_master_menu").draggable();
+        $("#styleJS_tooltip1").draggable();
+        // dragDrop.initElement("styleJS_master_menu");
+        // MUST READ!
+        // hiding_wrapper must be executed AFTER the DragDrop initialized
         hiding_wrapper("div#clickme","fieldset#slider");
+        //hiding_wrapper("button#first","fieldset#slider");
 
 
+        $(".styleJS_buttons1").click(function(e) {
+                $(".styleJS_buttons1.toggled").removeClass("toggled");
+                $(this).toggleClass("toggled");
+                var n = this.id;
 
-        // <div id="content" class="content-text" role="main" contenteditable="true" style="">
-        // Add a mouse control only to the parent
-        // with the event.target we can see which child triggered the event
-        $("div#content.content-text").mousemove(function(e) {
-                    //$("#styleJS_tooltip").text("ID: " + this.id + "\n Class: " + this.className);
-                    $("label#styleJS_tooltip").text("ID: " + e.target.id + "\n Class: " + e.target.className + "\n Tag: " + e.target.tagName);
-                    // console.log(e);
+                if (n === "styleJS_zero") {
+                    toggle_visibility("#styleJS_submenu_1");
+                    $("#styleJS_submenu_2").hide();
+               
+                } else if (n === "styleJS_first") {
+                    $("#slider").hide();
+                
+                } else if (n === "styleJS_second") {
+                    $("#slider").show();
+                }
+                else {
+                    
+                    $("#styleJS_submenu_2").show();
+                    $("#styleJS_submenu_2 > fieldset").hide();
+                    toggle_visibility("#" + n + "_fs");
+                    
+                    $("#slider").toggleClass("styleJS_hidden");
+                    console.log("Tretji Button");
+                }
+                
                 });
 
-        $("div#content.content-text").click(function(e) {
-                    selected_item = e.target;
-                });
-
-        // Dynamic creation of individual helpers
-
-        $("fieldset#slider > div#showIDClass").after('<label id="styleJS_tooltip" style="display=none;"></label>');
-        $("fieldset#slider > label#styleJS_tooltip").hide();
-
-        hiding_wrapper("fieldset#slider > div#showIDClass","label#styleJS_tooltip");
-       
-        $("fieldset#slider > div#changeBackgroundColor").after('<fieldset id="styleJS_colorselection" style="display=none;">\
-                <input id="styleJS_colsel_input" style="display=none;" placeholder="eg. blue or rgba(0,0,255,0.5) or #0000FF"></input>\
-                <button id="styleJS_colsel_button" style="display=none;"> OK </button>\
-                </filedset>');
-        $("fieldset#slider > fieldset#styleJS_colorselection").hide();
-        
-        $("fieldset#slider > fieldset#styleJS_colorselection > button#styleJS_colsel_button").click(function(e) {
+       $("#styleJS_colorSelection_fs_button").click(function(e) {
                     if (selected_item !== null && selected_item !== undefined) {
-                        selected_item.style.backgroundColor = $("fieldset#slider > fieldset#styleJS_colorselection > input#styleJS_colsel_input")[0].value;
+                        selected_item.style.backgroundColor = $("#styleJS_colorSelection_fs_input")[0].value;
                     }
                 });
 
-        hiding_wrapper("fieldset#slider > div#changeBackgroundColor","fieldset#styleJS_colorselection");
-
-        $("fieldset#slider > div#changeCornerRadius").after('<fieldset id="styleJS_cornerRadius" style="display=none;">\
-                <select id="styleJS_corrad_select_border" style="display=none;"><option>Choose Corner Style</option></select>\
-                <input id="styleJS_corrad_input_border" style="display=none;" placeholder="Border Width"></input>\
-                <input id="styleJS_corrad_input_radius" style="display=none;" placeholder="Radius eg. 10 or 10%"></input>\
-                <button id="styleJS_corrad_button" style="display=none;"> OK </button>\
-                </filedset>');
-        $("fieldset#slider > fieldset#styleJS_cornerRadius").hide();
-        from_array_to_select("select#styleJS_corrad_select_border", hardcoded_border_styles);
-        
-        $("fieldset#slider > fieldset#styleJS_cornerRadius > button#styleJS_corrad_button").click(function(e) {
+       $("#styleJS_cornerRadius_fs_button").click(function(e) {
                     if (selected_item !== null && selected_item !== undefined) {
-                        selected_item.style.borderStyle = $("fieldset#slider > fieldset#styleJS_cornerRadius > select#styleJS_corrad_select_border")[0].value;
-                        selected_item.style.borderWidth = $("fieldset#slider > fieldset#styleJS_cornerRadius > input#styleJS_corrad_input_border")[0].value;
-                        selected_item.style.borderRadius = $("fieldset#slider > fieldset#styleJS_cornerRadius > input#styleJS_corrad_input_radius")[0].value;
+                        selected_item.style.borderStyle = $("#styleJS_cornerRadius_fs_select")[0].value;
+                        selected_item.style.borderWidth = $("#styleJS_cornerRadius_fs_input_border")[0].value;
+                        selected_item.style.borderRadius = $("#styleJS_cornerRadius_fs_input_radius")[0].value;
                     }
                 });
 
-        hiding_wrapper("fieldset#slider > div#changeCornerRadius","fieldset#styleJS_cornerRadius");
-
-        $("fieldset#slider > div#displayStyle").after('<fieldset id="styleJS_displayStyle" style="display=none;">\
-                <textarea id="styleJS_dissty_textarea" wrap="wrap"></textarea>\
-             // <!--  <select id="styleJS_dissty_select"><option>Choose CSS attribute</option></select> -->\
-                <button id="styleJS_dissty_button" style="display=none;"> Refresh </button>\
-                </filedset>');
-        $("fieldset#slider > fieldset#styleJS_displayStyle").hide();
-
-        // To use the following code you need to uncomment the select above
-        // from_array_to_select("select#styleJS_dissty_select", css_style_attributes);
-        
-        $("fieldset#slider > fieldset#styleJS_displayStyle > button#styleJS_dissty_button").click(function(e) {
+        $("#styleJS_displayStyle_fs_button").click(function(e) {
                     if (selected_item !== null && selected_item !== undefined) {
-                        var temp_lookup = $("fieldset#slider > fieldset#styleJS_displayStyle > textarea#styleJS_dissty_textarea");
+                        var temp_lookup = $("#styleJS_displayStyle_fs_textarea");
                         //console.log(temp_lookup[0].value);
                         var i,
                             output = "";
@@ -156,25 +327,48 @@ $(document).ready(function() {
                     };
                 });
 
-        hiding_wrapper("fieldset#slider > div#displayStyle","fieldset#styleJS_displayStyle");
 
-        $("fieldset#slider > div#fontPicker").after('<fieldset id="styleJS_fontPicker" style="display=none;">\
-                <select id="styleJS_fntpick_select_font" style="display=none;"><option>Choose Font</option></select>\
-                <input id="styleJS_fntpick_input_size" style="display=none;">Font Size</input>\
-                <button id="styleJS_fntpick_button" style="display=none;"> OK </button>\
-                </filedset>');
-        $("fieldset#slider > fieldset#styleJS_fontPicker").hide();
-
-        from_array_to_select("select#styleJS_fntpick_select_font", hardcoded_font_families);
-
-        $("fieldset#slider > fieldset#styleJS_fontPicker > button#styleJS_fntpick_button").click(function(e) {
+       $("#styleJS_fontPicker_fs_button").click(function(e) {
                     if (selected_item !== null && selected_item !== undefined) {
-                        selected_item.style.fontFamily = $("fieldset#slider > fieldset#styleJS_fontPicker > select#styleJS_fntpick_select_font")[0].value;
-                        selected_item.style.fontSize = $("fieldset#slider > fieldset#styleJS_fontPicker > input#styleJS_fntpick_input_size")[0].value;
+                        selected_item.style.fontFamily = $("#styleJS_fontPicker_fs_select")[0].value;
+                        selected_item.style.fontSize = $("#styleJS_fontPicker_fs_input")[0].value;
                     }
                 });
 
-        hiding_wrapper("fieldset#slider > div#fontPicker","fieldset#styleJS_fontPicker");
+
+       // console.log("MASTER ",$("#styleJS_master_menu").html(), document.getElementById("styleJS_master_menu").innerHTML);
+        console.log("MASTER ", document.getElementById("styleJS_master_menu").innerHTML);
+
+        // <div id="content" class="content-text" role="main" contenteditable="true" style="">
+        // Add a mouse control only to the parent
+        // with the event.target we can see which child triggered the event
+        $("div#content.content-text").mousemove(function(e) {
+                var hover_output = "",
+                    select_output = "";
+
+                    hover_output += e.target.id ? " ID: " + e.target.id : "";
+                    hover_output += e.target.className ? " Class: " + e.target.className : "";
+                    hover_output += e.target.tagName ? " Tag: " + e.target.tagName : "";
+
+                    if (selected_item !== null && selected_item !== undefined) {
+                        select_output += selected_item.id ? " ID: " + e.target.id : "";
+                        select_output += selected_item.className ? " Class: " + selected_item.className : "";
+                        select_output += selected_item.tagName ? " Tag: " + selected_item.tagName : "";
+                    } else {
+                        select_output = "NO element selected."
+                    }
+                    //$("#styleJS_tooltip").text("ID: " + this.id + "\n Class: " + this.className);
+                    //$("label#styleJS_tooltip").text("ID: " + e.target.id + "\n Class: " + e.target.className + "\n Tag: " + e.target.tagName);
+                    $("#styleJS_tooltip1").html("Hovering ... " + hover_output + "<br>" + "Selected: " + select_output);
+                    // console.log(e);
+                });
+
+        $("div#content.content-text").click(function(e) {
+                    selected_item = e.target;
+                });
+
+        // Dynamic creation of individual helpers
+        // Obsolete code TODO: delete
 
         var _styleJS = {
             getSelection : function() {
