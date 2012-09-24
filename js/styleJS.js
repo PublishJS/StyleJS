@@ -130,7 +130,8 @@ $(document).ready(function() {
             };
         };
 
-        console.log("Running!", this);
+        console.log("Running!");
+        //console.log("Running!", this);
         // console.log(css_style_attributes);
 
         // Create a CSS style for the Floating Menu.
@@ -199,9 +200,10 @@ $(document).ready(function() {
             html_part +='      <button id="styleJS_colorSelection" class="styleJS_buttons1" title="Change Background Color">1</button>';
             html_part +='      <button id="styleJS_cornerRadius" class="styleJS_buttons1" title="Change Corners">2</button>';
             html_part +='      <button id="styleJS_displayStyle" class="styleJS_buttons1" title="Display Style">3</button>';
-            html_part +='      <button id="styleJS_fontPicker" class="styleJS_buttons1" title="Que Passa">4</button>';
-            html_part +='      <button id="styleJS_second" class="styleJS_buttons1" title="Que Passa">5</button>';
-            html_part +='      <button id="styleJS_third" class="styleJS_buttons1" title="Que Passa">6</button>';
+            html_part +='      <button id="styleJS_fontPicker" class="styleJS_buttons1" title="Font Picker">4</button>';
+            html_part +='      <button id="styleJS_wordWrap" class="styleJS_buttons1" title="Word Wrap">5</button>';
+            html_part +='      <button id="styleJS_changeSizes" class="styleJS_buttons1" title="Change Sizes">6</button>';
+            html_part +='      <button id="styleJS_alignMargin" class="styleJS_buttons1" title="Align and Margin">7</button>';
             html_part +='   </div>';
             html_part +='   <div id="styleJS_submenu_2" style="display: none">';
 
@@ -233,6 +235,53 @@ $(document).ready(function() {
             html_part +='          <button id="styleJS_fontPicker_fs_button"> OK </button>';
             html_part +='      </fieldset>';
             
+            html_part +='      <fieldset id="styleJS_wordWrap_fs" style="display=none;">';
+            html_part +='          <select id="styleJS_wordWrap_fs_select">';
+            html_part +='          <option>Choose Word Wrap</option>';
+            html_part +='          <option>normal</option>';
+            html_part +='          <option>break-word</option></select>';
+            html_part +='          <button id="styleJS_wordWrap_fs_button"> OK </button>';
+            html_part +='      </fieldset>';
+            
+            html_part +='      <fieldset id="styleJS_changeSizes_fs" style="display=none;">';
+            html_part +='          <select id="styleJS_changeSizes_fs_select">';
+            html_part +='          <option>Choose Position</option>';
+            html_part +='          <option>static</option>';
+            html_part +='          <option>relative</option>';
+            html_part +='          <option>absolute</option>';
+            html_part +='          <option>fixed</option>';
+            html_part +='          <option>inherit</option></select>';
+            html_part +='          <input id="styleJS_changeSizes_fs_input_top" placeholder="Top"></input>';
+            html_part +='          <input id="styleJS_changeSizes_fs_input_bottom" placeholder="Bottom"></input>';
+            html_part +='          <input id="styleJS_changeSizes_fs_input_left" placeholder="Left"></input>';
+            html_part +='          <input id="styleJS_changeSizes_fs_input_right" placeholder="Right"></input>';
+            html_part +='          <input id="styleJS_changeSizes_fs_input_height" placeholder="Height"></input>';
+            html_part +='          <input id="styleJS_changeSizes_fs_input_width" placeholder="Width"></input>';
+            html_part +='          <button id="styleJS_changeSizes_fs_button"> OK </button>';
+            html_part +='      </fieldset>';
+            
+            html_part +='      <fieldset id="styleJS_alignMargin_fs" style="display=none;">';
+            html_part +='          <select id="styleJS_alignMargin_fs_select">';
+            html_part +='          <option>Choose Align</option>';
+            html_part +='          <option>left</option>';
+            html_part +='          <option>right</option>';
+            html_part +='          <option>center</option>';
+            html_part +='          <option>justify</option></select>';
+            html_part +='          <select id="styleJS_alignMargin_fs_select_vertical">';
+            html_part +='          <option>Choose Vertical Align</option>';
+            html_part +='          <option>baseline</option>';
+            html_part +='          <option>sub</option>';
+            html_part +='          <option>super</option>';
+            html_part +='          <option>text-top</option>';
+            html_part +='          <option>text-bottom</option>';
+            html_part +='          <option>middle</option>';
+            html_part +='          <option>top</option>';
+            html_part +='          <option>bottom</option></select>';
+            html_part +='          <input id="styleJS_alignMargin_fs_input" placeholder="Margin"></input>';
+            html_part +='          <input id="styleJS_alignMargin_fs_input_padding" placeholder="Padding"></input>';
+            html_part +='          <button id="styleJS_alignMargin_fs_button"> OK </button>';
+            html_part +='      </fieldset>';
+
             html_part +='   </div>';
            // TODO: file saving stuff !!!
            // html_part +=                '       <input type="file">';
@@ -288,7 +337,7 @@ $(document).ready(function() {
                     toggle_visibility("#" + n + "_fs");
                     
                     $("#slider").toggleClass("styleJS_hidden");
-                    console.log("Tretji Button");
+                    // console.log("Tretji Button");
                 }
                 
                 });
@@ -335,9 +384,36 @@ $(document).ready(function() {
                     }
                 });
 
+       $("#styleJS_wordWrap_fs_button").click(function(e) {
+                    if (selected_item !== null && selected_item !== undefined) {
+                        selected_item.style.wordWrap = $("#styleJS_wordWrap_fs_select")[0].value;
+                    }
+                });
+
+       $("#styleJS_changeSizes_fs_button").click(function(e) {
+                    if (selected_item !== null && selected_item !== undefined) {
+                        selected_item.style.position = $("#styleJS_changeSizes_fs_select")[0].value;
+                        selected_item.style.top = $("#styleJS_changeSizes_fs_input_top")[0].value;
+                        selected_item.style.bottom = $("#styleJS_changeSizes_fs_input_bottom")[0].value;
+                        selected_item.style.left = $("#styleJS_changeSizes_fs_input_left")[0].value;
+                        selected_item.style.right = $("#styleJS_changeSizes_fs_input_right")[0].value;
+                        selected_item.style.height = $("#styleJS_changeSizes_fs_input_height")[0].value;
+                        selected_item.style.width = $("#styleJS_changeSizes_fs_input_width")[0].value;
+                    }
+                });
+
+
+       $("#styleJS_alignMargin_fs_button").click(function(e) {
+                    if (selected_item !== null && selected_item !== undefined) {
+                        selected_item.style.textAlign = $("#styleJS_alignMargin_fs_select")[0].value;
+                        selected_item.style.verticalAlign = $("#styleJS_alignMargin_fs_select_vertical")[0].value;
+                        selected_item.style.margin = $("#styleJS_alignMargin_fs_input")[0].value;
+                        selected_item.style.padding = $("#styleJS_alignMargin_fs_input_padding")[0].value;
+                    }
+                });
 
        // console.log("MASTER ",$("#styleJS_master_menu").html(), document.getElementById("styleJS_master_menu").innerHTML);
-        console.log("MASTER ", document.getElementById("styleJS_master_menu").innerHTML);
+       // console.log("MASTER ", document.getElementById("styleJS_master_menu").innerHTML);
 
         // <div id="content" class="content-text" role="main" contenteditable="true" style="">
         // Add a mouse control only to the parent
