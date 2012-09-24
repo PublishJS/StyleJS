@@ -153,10 +153,11 @@ $(document).ready(function() {
             css_part +="        padding:2px 5px; color:#333;";
             css_part +="    }";
             css_part +="    #styleJS_tooltip1 { ";
-            css_part +="        position: fixed;";
-            css_part +="        border:1px solid #333; background:#f7f5d1;";
-            css_part +="        left:0;";
-            css_part +="        top:100px;";
+            css_part +="        display:none ";
+          //  css_part +="        position: fixed;";
+          //  css_part +="        border:1px solid #333; background:#f7f5d1;";
+          //  css_part +="        left:0;";
+          //  css_part +="        top:100px;";
             css_part +="    }";
             css_part +="    #slider { ";
             css_part +="        position:relative;";
@@ -182,12 +183,15 @@ $(document).ready(function() {
             css_part +="    }";
             css_part +="    #styleJS_master_menu { ";
             css_part +="        position: fixed;";
-            css_part +="        width:200px;";
-            css_part +="        height:200px;";
-            css_part +="        border:3px solid black;";
+            css_part +="        background-color: grey;";
+            css_part +="        width:auto;";
+            css_part +="        max-width:230px;";
+          //  css_part +="        height:200px;";
+            css_part +="        border:1px solid black;";
             css_part +="        cursor:move;";
             css_part +="        left:0;";
             css_part +="        top:150px;";
+            css_part +="        padding:8px 0px 0px 0px;";
             css_part +="    }";
             css_part +="</style>";
 
@@ -195,7 +199,7 @@ $(document).ready(function() {
 
         // Create the floating Menu.
         var html_part = '<div id="styleJS_master_menu"> ';
-            html_part +='   <button id="styleJS_zero" class="styleJS_buttons1" title="Functions">0</button>';
+            html_part +='   <button id="styleJS_zero" style="align:center;" class="styleJS_buttons1" title="Functions">StyleJS</button>';
             html_part +='   <div id="styleJS_submenu_1" style="display: none">';
             html_part +='      <button id="styleJS_colorSelection" class="styleJS_buttons1" title="Change Background Color">1</button>';
             html_part +='      <button id="styleJS_cornerRadius" class="styleJS_buttons1" title="Change Corners">2</button>';
@@ -285,12 +289,12 @@ $(document).ready(function() {
             html_part +='   </div>';
            // TODO: file saving stuff !!!
            // html_part +=                '       <input type="file">';
-           // html_part +=                '       </input>';
+            html_part +='<fieldset id="styleJS_tooltip1">';
+            html_part +='</fieldset>';
+
+          // html_part +=                '       </input>';
             html_part +='</div>';
             // END of Master Menu
-            html_part +='<div id="styleJS_tooltip1">';
-            html_part +='</div>';
-
 
         // Append the Menu to the Body
         $("body").append(html_part);
@@ -319,9 +323,11 @@ $(document).ready(function() {
                 $(".styleJS_buttons1.toggled").removeClass("toggled");
                 $(this).toggleClass("toggled");
                 var n = this.id;
+                //$("#styleJS_tooltip1").hide();
 
                 if (n === "styleJS_zero") {
                     toggle_visibility("#styleJS_submenu_1");
+                    toggle_visibility("#styleJS_tooltip1");
                     $("#styleJS_submenu_2").hide();
                
                 } else if (n === "styleJS_first") {
